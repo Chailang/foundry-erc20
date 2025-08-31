@@ -39,6 +39,10 @@ contract MyTokenTest is Test {
         vm.expectRevert(); 
         //尝试调用 myToken 合约的 mint 函数，将 1 个代币铸造到合约地址 address(this)。但是，因为 MyToken 合约没有实现 mint 函数（或者限制了铸造权限），这应该会失败并回退。
         MintableToken(address(myToken)).mint(address(this), 1);
+
+        // MintableToken 是一个接口，声明了 mint(address,uint256) 函数。
+        // 但是，你的 MyToken 合约里 并没有实现 mint 函数（你之前的 ERC20 合约只支持 transfer、approve、transferFrom 等）。
+        // 当你强行把 myToken 转成 MintableToken 并调用 mint(...) 时，EVM 在合约里找不到对应的函数签名 → 直接触发 fallback，因为没有 fallback 实现 → 自动 revert。
     }
     //测试代币的授权和转账功能
     function testAllowances() public {
